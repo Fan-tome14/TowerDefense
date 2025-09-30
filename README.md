@@ -1,20 +1,20 @@
-# Space Shooter
+# Tower Defense
 
-Ce projet a été réalisé en groupe dans le cadre du **Travail Pratique 1 (TP1)** du cours **Programmation avec des moteurs de jeu**, offert à l’**Université du Québec à Chicoutimi (UQAC)**.
+Ce projet a été réalisé en groupe dans le cadre du **Travail Pratique 2 (TP2)** du cours **Programmation avec des moteurs de jeu**, offert à l’**Université du Québec à Chicoutimi (UQAC)**.
 
 ---
 
 - **Titre du projet :** Space Shooter  
-- **Date de réalisation :** 20 septembre 2025  
-- **Type de projet :** Travail individuel  
+- **Date de réalisation :** 30 Octobre 2025  
+- **Type de projet :** Travail de binome  
 - **Moteur de développement :** Unreal Engine
 
 ---
 
 ## Objectif du projet
 
-L’objectif de ce travail était de concevoir et de développer un **jeu de type Space Shooter** utilisant le moteur **Unreal Engine**.  
-Le projet constitue une mise en pratique des compétences en développement de jeux vidéo vues dans le TP1, avec un accent sur la programmation des mécaniques de jeu et la gestion des interactions.
+L’objectif de ce travail était de concevoir et de développer un **jeu de type Tower Defense** utilisant le moteur **Unreal Engine**.  
+C’est un jeu de type Tower Defense développé sur Unreal Engine, conçu selon une approche data-driven design, où les mécaniques, ennemis et paramètres d’équilibrage sont pilotés directement par les données pour offrir flexibilité et évolutivité.
 
 ---
 
@@ -43,4 +43,4 @@ Afin d’obtenir un exécutable **(.exe)**, il est nécessaire d’utiliser la f
 ## Remarque
 
 Ce projet a été développé exclusivement dans un but académique et ne constitue pas un produit fini.  
-Il s’agit d’une **preuve de concept** visant à mettre en application les principes de base du développement de jeux vidéo, avec un gameplay de type Space Shooter.
+Il s’agit d’une **preuve de concept** visant à mettre en application les principes de base du développement de jeux vidéo, avec un gameplay de type Tower Defense.
