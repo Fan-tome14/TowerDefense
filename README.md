@@ -4,7 +4,7 @@ Ce projet a été réalisé en groupe dans le cadre du **Travail Pratique 2 (TP2
 
 ---
 
-- **Titre du projet :** Space Shooter  
+- **Titre du projet :** Tower Defense
 - **Date de réalisation :** 30 Octobre 2025  
 - **Type de projet :** Travail de binome  
 - **Moteur de développement :** Unreal Engine
