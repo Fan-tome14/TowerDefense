@@ -20,7 +20,7 @@ protected:
 
 public:	
 	/** Target point dans la scène que l'AI doit rejoindre */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
 	ATargetPoint* TargetPointActor;
 
 	/** Data Asset contenant les stats de l'UFO */

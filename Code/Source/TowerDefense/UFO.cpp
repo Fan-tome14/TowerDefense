@@ -3,6 +3,8 @@
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h" // 🔹 Nécessaire pour GetActorOfClass
+#include "Engine/TargetPoint.h"     // 🔹 Pour le type ATargetPoint
 
 AUFO::AUFO()
 {
@@ -11,11 +13,29 @@ AUFO::AUFO()
 	// Utiliser l'AIController dédié
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = AEnnemyAIController::StaticClass();
+
+	// Laisser le CharacterMovement gérer la rotation
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 void AUFO::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// ✅ Récupération automatique du premier TargetPoint trouvé dans la scène
+	if (!TargetPointActor)
+	{
+		AActor* FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), ATargetPoint::StaticClass());
+		if (FoundActor)
+		{
+			TargetPointActor = Cast<ATargetPoint>(FoundActor);
+			UE_LOG(LogTemp, Warning, TEXT("TargetPoint trouvé : %s"), *TargetPointActor->GetName());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Aucun TargetPoint trouvé dans la scène pour %s"), *GetName());
+		}
+	}
 
 	// Récupération des stats depuis le Data Asset
 	if (UFOData)
@@ -33,13 +53,14 @@ void AUFO::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("UFOData non assigné pour %s"), *GetName());
 	}
 
-	// Déplacement vers le TargetPoint via NavMesh
+	// ✅ Déplacement vers le TargetPoint via NavMesh (si trouvé)
 	if (TargetPointActor)
 	{
 		AEnnemyAIController* AICont = Cast<AEnnemyAIController>(GetController());
 		if (AICont)
 		{
-			AICont->MoveToActor(TargetPointActor, 5.0f); // 5.f = tolerance distance
+			AICont->MoveToActor(TargetPointActor, 5.0f); // 5.f = tolérance distance
+			UE_LOG(LogTemp, Warning, TEXT("%s se déplace vers %s"), *GetName(), *TargetPointActor->GetName());
 		}
 		else
 		{
@@ -48,7 +69,7 @@ void AUFO::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TargetPoint non assigné pour %s"), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("TargetPoint non trouvé pour %s"), *GetName());
 	}
 }
 
@@ -56,7 +77,7 @@ void AUFO::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Rotation vers la cible
+	// Optionnel : Rotation vers la cible (visuel uniquement)
 	if (TargetPointActor)
 	{
 		FVector Direction = (TargetPointActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
