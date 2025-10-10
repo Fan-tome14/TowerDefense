@@ -1,13 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseEnemy.h"
 #include "GameFramework/Character.h"
 #include "UEnemyData.h"
 #include "Engine/TargetPoint.h"
 #include "UFO.generated.h"
 
 UCLASS()
-class TOWERDEFENSE_API AUFO : public ACharacter
+class TOWERDEFENSE_API AUFO : public ABaseEnemy
 {
 	GENERATED_BODY()
 

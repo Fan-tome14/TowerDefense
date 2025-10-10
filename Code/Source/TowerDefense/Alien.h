@@ -1,13 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseEnemy.h"
 #include "GameFramework/Character.h"
 #include "Engine/TargetPoint.h"
 #include "UEnemyData.h"
 #include "Alien.generated.h"
 
 UCLASS()
-class TOWERDEFENSE_API AAlien : public ACharacter
+class TOWERDEFENSE_API AAlien : public ABaseEnemy
 {
 	GENERATED_BODY()
 
@@ -17,8 +18,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void StartMovingToTarget();
-	virtual void PossessedBy(AController* NewController) override; // ✅ Ajouté
-
 public:
 	virtual void Tick(float DeltaTime) override;
 
