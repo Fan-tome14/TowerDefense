@@ -4,6 +4,7 @@
 #include "Alien.h"
 #include "TimerManager.h"
 #include "BaseEnemy.h"
+#include "Kismet/GameplayStatics.h"
 #include "UFO.h"
 
 ATowerDefenseGameState::ATowerDefenseGameState()
@@ -12,26 +13,27 @@ ATowerDefenseGameState::ATowerDefenseGameState()
 	CurrentWaveIndex = 0;
 	AliveEnemies = 0;
 
-	SpawnLocation = FVector(640.f, -1300.f, 148.f);
+	SpawnLocation = FVector(-510.f, 120.f, 260.f);
 	SpawnRotation = FRotator::ZeroRotator;
 
 	UE_LOG(LogTemp, Warning, TEXT("⚙️ GameState construit."));
 }
 
+
+
 void ATowerDefenseGameState::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (WaveDataTable)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("✅ WaveDataTable trouvé, lancement des vagues..."));
 		StartNextWave();
-	}
-	else
+	} else
 	{
 		UE_LOG(LogTemp, Error, TEXT("❌ Aucun DataTable assigné dans le GameState !"));
 	}
 }
+
 
 void ATowerDefenseGameState::Tick(float DeltaSeconds)
 {
