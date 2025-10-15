@@ -11,9 +11,6 @@ class TOWERDEFENSE_API UTourData : public UDataAsset
 
 public:
 
-    // Vie de la tourelle
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
-    float Vie = 100.f;
 
     // Dégâts par missile
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")

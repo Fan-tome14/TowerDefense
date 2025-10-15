@@ -11,7 +11,6 @@ ATourBase::ATourBase()
     PointDeTir = CreateDefaultSubobject<USceneComponent>(TEXT("PointDeTir"));
     PointDeTir->SetupAttachment(RootComponent);
 
-    Vie = 100.f;
     Portee = 800.f;
     CadenceTir = 2.f;
     Degats = 10.f;
@@ -33,7 +32,6 @@ void ATourBase::InitialiserDepuisData()
 {
     if (DataTour)
     {
-        Vie = DataTour->Vie;
         Degats = DataTour->Degats;
         Portee = DataTour->Portee;
         CadenceTir = DataTour->CadenceTir;
@@ -90,11 +88,4 @@ void ATourBase::TirerSurCible()
     }
 }
 
-void ATourBase::SubirDegats(float Quantite)
-{
-    Vie -= Quantite;
-    if (Vie <= 0)
-    {
-        Destroy();
-    }
-}
+

@@ -25,9 +25,6 @@ protected:
     UTourData* DataTour;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
-    float Vie;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float Portee;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
@@ -38,7 +35,7 @@ protected:
 
     // --- Combat ---
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-    TSoftClassPtr<AMissileBase> MissileBlueprintSoft; // Permet de glisser un BP missile directement
+    TSoftClassPtr<AMissileBase> MissileBlueprintSoft; 
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
     USceneComponent* PointDeTir;
