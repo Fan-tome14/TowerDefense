@@ -2,25 +2,29 @@
 
 ABaseEnemy::ABaseEnemy()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
+    Vie = 100.f;
 }
 
 void ABaseEnemy::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 }
 
 void ABaseEnemy::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 }
 
-void ABaseEnemy::Destroyed()
+void ABaseEnemy::SubirDegats(float Quantite)
 {
-	Super::Destroyed();
+    Vie -= Quantite;
 
-	// ⚡ Notifie tous les abonnés que cet ennemi vient d’être détruit
-	OnEnemyDeath.Broadcast(this);
+    if (Vie <= 0.f)
+    {
+        //  Déclencher l’événement de mort
+        OnEnemyDeath.Broadcast(this);
 
-	UE_LOG(LogTemp, Warning, TEXT("☠️ %s a été détruit (broadcast envoyé)"), *GetName());
+        Destroy();
+    }
 }

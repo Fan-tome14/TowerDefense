@@ -4,27 +4,32 @@
 #include "GameFramework/Character.h"
 #include "BaseEnemy.generated.h"
 
-// ✅ Délégué pour signaler la mort de l’ennemi
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeath, ABaseEnemy*, DeadEnemy);
+// 🔥 Déclaration du délégué (événement)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathSignature, ABaseEnemy*, EnnemiMort);
 
 UCLASS()
 class TOWERDEFENSE_API ABaseEnemy : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ABaseEnemy();
-
-	// ✅ Événement appelé quand l’ennemi est détruit
-	UPROPERTY(BlueprintAssignable, Category = "Events")
-	FOnEnemyDeath OnEnemyDeath;
+    ABaseEnemy();
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
 public:
-	virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float DeltaTime) override;
 
-	// ✅ On override Destroyed() pour déclencher notre événement
-	virtual void Destroyed() override;
+    // --- Statistiques de base ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats Ennemi")
+    float Vie;
+
+    // --- Fonction pour encaisser des dégâts ---
+    UFUNCTION(BlueprintCallable, Category = "Combat Ennemi")
+    void SubirDegats(float Quantite);
+
+    // 🔥 Événement appelé à la mort de l’ennemi
+    UPROPERTY(BlueprintAssignable, Category = "Événements")
+    FOnEnemyDeathSignature OnEnemyDeath;
 };
