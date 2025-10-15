@@ -27,6 +27,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave System")
 	FRotator SpawnRotation;
 
+	UPROPERTY(BlueprintReadOnly, Category="Timer")
+	float TempsAvantProchaineVague;
+
+	UFUNCTION(BlueprintCallable, Category="Timer")
+	float GetTempsAvantProchaineVague() const { return TempsAvantProchaineVague; }
+
+
 	UFUNCTION(BlueprintCallable, Category = "Wave")
 	void DecrementAliveEnemies();
 

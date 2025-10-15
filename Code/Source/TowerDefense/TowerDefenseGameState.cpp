@@ -38,7 +38,17 @@ void ATowerDefenseGameState::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	// Si un timer de prochaine vague est en cours
+	if (GetWorldTimerManager().IsTimerActive(NextWaveTimer))
+	{
+		TempsAvantProchaineVague = GetWorldTimerManager().GetTimerRemaining(NextWaveTimer);
+	}
+	else
+	{
+		TempsAvantProchaineVague = 0.f;
+	}
 }
+
 
 void ATowerDefenseGameState::StartWaves()
 {

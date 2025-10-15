@@ -12,39 +12,63 @@ UCLASS()
 class TOWERDEFENSE_API ATourBase : public AActor
 {
     GENERATED_BODY()
-
-public:
+    
+public:	
     ATourBase();
 
 protected:
     virtual void BeginPlay() override;
+
+public:	
     virtual void Tick(float DeltaTime) override;
 
-    // --- Statistiques de la tourelle via DataAsset ---
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
+    // ----------------------
+    // Données & Composants
+    // ----------------------
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
     UTourData* DataTour;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
-    float Portee;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Amélioration")
+    int32 NiveauActuel = 1;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
-    float CadenceTir;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tour")
+    UStaticMeshComponent* MeshTour;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
-    float Degats;
-
-    // --- Combat ---
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
-    TSoftClassPtr<AMissileBase> MissileBlueprintSoft; 
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tour")
     USceneComponent* PointDeTir;
 
-    FTimerHandle GestionTir;
+    UPROPERTY()
+    USceneComponent* ArmeComponent; 
+
+    UPROPERTY()
+    AActor* ModeleActeur; // L’acteur du modèle (spawné depuis DataTour)
+
+    // ----------------------
+    // Variables de combat
+    // ----------------------
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    float Portee;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    float CadenceTir;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    float Degats;
+
+    UPROPERTY()
     ABaseEnemy* CibleActuelle;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Missile")
+    TSoftClassPtr<AMissileBase> MissileBlueprintSoft;
+
+    FTimerHandle GestionTir;
+
+    // ----------------------
+    // Fonctions
+    // ----------------------
+    void InitialiserDepuisData();
     void TrouverEnnemiLePlusProche();
     void TirerSurCible();
-    void InitialiserDepuisData();
-
+    void AmeliorerTour();
+    
 };
