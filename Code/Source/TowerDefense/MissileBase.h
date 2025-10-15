@@ -24,7 +24,16 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Missile")
     float Degats;
 
-    ABaseEnemy* Cible; // ✅ correction ici
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effets")
+    UParticleSystem* EffetImpact;  
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effets")
+    USoundBase* SonImpact; 
+
+
+
+    ABaseEnemy* Cible; 
 
 public:
     void DefinirCible(ABaseEnemy* NouvelleCible) { Cible = NouvelleCible; }

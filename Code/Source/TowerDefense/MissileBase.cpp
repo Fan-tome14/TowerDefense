@@ -1,5 +1,5 @@
 ﻿#include "MissileBase.h"
-#include "BaseEnemy.h" // ✅ correction ici
+#include "BaseEnemy.h" 
 #include "Kismet/GameplayStatics.h"
 
 AMissileBase::AMissileBase()
@@ -29,7 +29,26 @@ void AMissileBase::Tick(float DeltaTime)
 
     if (FVector::Dist(GetActorLocation(), Cible->GetActorLocation()) < 50.f)
     {
-        Cible->SubirDegats(Degats); // ✅ assure-toi que SubirDegats existe dans ABaseEnemy
+        // Infliger les dégâts
+        Cible->SubirDegats(Degats);
+
+        //  Jouer l’effet d’impact
+        if (EffetImpact)
+        {
+            
+            FVector Echelle(0.5f);
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EffetImpact, GetActorLocation(), FRotator::ZeroRotator, Echelle, true);
+
+        }
+
+        //  Jouer le son d’impact
+        if (SonImpact)
+        {
+            UGameplayStatics::PlaySoundAtLocation(GetWorld(), SonImpact, GetActorLocation());
+        }
+
+        // Détruire le missile
         Destroy();
     }
+
 }
