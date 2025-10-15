@@ -1,4 +1,6 @@
 #include "BaseEnemy.h"
+#include "Kismet/GameplayStatics.h"
+#include "ScoreGameInstance.h"
 
 ABaseEnemy::ABaseEnemy()
 {
@@ -22,9 +24,17 @@ void ABaseEnemy::SubirDegats(float Quantite)
 
     if (Vie <= 0.f)
     {
-        //  Déclencher l’événement de mort
+     if (UScoreGameInstance* GI = Cast<UScoreGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+     {
+        GI->AjouterScore();
+     }
+        
+
+        // Déclencher l’événement de mort
         OnEnemyDeath.Broadcast(this);
 
         Destroy();
     }
 }
+
+

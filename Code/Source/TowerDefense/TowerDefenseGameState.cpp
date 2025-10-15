@@ -16,7 +16,6 @@ ATowerDefenseGameState::ATowerDefenseGameState()
 	SpawnLocation = FVector(-510.f, 120.f, 260.f);
 	SpawnRotation = FRotator::ZeroRotator;
 
-	UE_LOG(LogTemp, Warning, TEXT("⚙️ GameState construit."));
 }
 
 
@@ -39,11 +38,6 @@ void ATowerDefenseGameState::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// Affiche le nombre d’ennemis vivants en continu
-	if (AliveEnemies > 0)
-	{
-		UE_LOG(LogTemp, Display, TEXT("👀 Ennemis vivants : %d"), AliveEnemies);
-	}
 }
 
 void ATowerDefenseGameState::StartWaves()
