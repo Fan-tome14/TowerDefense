@@ -39,7 +39,7 @@ void AAlien::BeginPlay()
 	if (AlienData)
 	{
 		MovementSpeed = AlienData->Vitesse;
-		Health = AlienData->Vie;
+		Vie = AlienData->Vie;
 		GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 	}
 

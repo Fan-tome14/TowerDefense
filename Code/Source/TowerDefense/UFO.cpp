@@ -41,7 +41,7 @@ void AUFO::BeginPlay()
 	if (UFOData)
 	{
 		MovementSpeed = UFOData->Vitesse;
-		Health = UFOData->Vie;
+		Vie = UFOData->Vie;
 		UFOClass = UFOData->Nom.ToString();
 		UFOClassType = UFOData->EnemyClass;
 

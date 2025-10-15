@@ -25,8 +25,6 @@ public:
 
 	float MovementSpeed;
 
-	float Health;
-
 	FString AlienClass;
 
 	TSubclassOf<ACharacter> AlienClassType;
