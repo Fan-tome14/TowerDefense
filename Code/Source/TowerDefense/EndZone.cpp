@@ -25,12 +25,14 @@ void AKillZone::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 							   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 							   bool bFromSweep, const FHitResult& SweepResult)
 {
+
 	if (!OtherActor)
 		return;
 
 	ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor);
 	if (Enemy)
 	{
+
 		UE_LOG(LogTemp, Warning, TEXT("💥 %s détruit par KillZone"), *Enemy->GetName());
 		Enemy->Destroy();
 	}

@@ -180,3 +180,24 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
 		);
 	}
 }
+
+
+void ATowerDefenseGameState::DecrementAliveEnemies()
+{
+	AliveEnemies--;
+	UE_LOG(LogTemp, Warning, TEXT("💀 Ennemi tué. Restants : %d"), AliveEnemies);
+
+	if (AliveEnemies <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("✅ Vague %d terminée, préparation de la suivante..."), CurrentWaveIndex + 1);
+		CurrentWaveIndex++;
+
+		GetWorldTimerManager().SetTimer(
+			NextWaveTimer,
+			this,
+			&ATowerDefenseGameState::StartNextWave,
+			CurrentNextWaveDelay,
+			false
+		);
+	}
+}

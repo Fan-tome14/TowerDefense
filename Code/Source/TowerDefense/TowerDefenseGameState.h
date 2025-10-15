@@ -27,6 +27,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave System")
 	FRotator SpawnRotation;
 
+	UFUNCTION(BlueprintCallable, Category = "Wave")
+	void DecrementAliveEnemies();
+
+
 	void StartWaves();
 	void StartNextWave();
 	void SpawnEnemy();
