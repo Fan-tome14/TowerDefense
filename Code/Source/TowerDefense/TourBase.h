@@ -2,9 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TourData.h"
 #include "TourBase.generated.h"
 
-class ABaseEnemy;      // ✅ correction ici
+class ABaseEnemy;
 class AMissileBase;
 
 UCLASS()
@@ -19,37 +20,37 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques Tourelle")
-    int32 TypeTour;
+    // --- Statistiques de la tourelle via DataAsset ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
+    UTourData* DataTour;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques Tourelle")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float Vie;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques Tourelle")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float Portee;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques Tourelle")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float CadenceTir;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques Tourelle")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float Degats;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Tourelle")
-    TSubclassOf<AMissileBase> ClasseMissile;
+    // --- Combat ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    TSoftClassPtr<AMissileBase> MissileBlueprintSoft; // Permet de glisser un BP missile directement
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Tourelle")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
     USceneComponent* PointDeTir;
 
     FTimerHandle GestionTir;
-    ABaseEnemy* CibleActuelle; // ✅ correction ici
+    ABaseEnemy* CibleActuelle;
 
     void TrouverEnnemiLePlusProche();
     void TirerSurCible();
+    void InitialiserDepuisData();
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Tourelle")
     void SubirDegats(float Quantite);
-
-    UFUNCTION(BlueprintCallable, Category = "Tourelle")
-    void InitialiserTour(int32 Type);
 };

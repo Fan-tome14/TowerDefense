@@ -1,5 +1,5 @@
 ﻿#include "TourBase.h"
-#include "BaseEnemy.h" // ✅ correction ici
+#include "BaseEnemy.h"
 #include "MissileBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
@@ -11,7 +11,6 @@ ATourBase::ATourBase()
     PointDeTir = CreateDefaultSubobject<USceneComponent>(TEXT("PointDeTir"));
     PointDeTir->SetupAttachment(RootComponent);
 
-    TypeTour = 1;
     Vie = 100.f;
     Portee = 800.f;
     CadenceTir = 2.f;
@@ -21,10 +20,7 @@ ATourBase::ATourBase()
 void ATourBase::BeginPlay()
 {
     Super::BeginPlay();
-
-    InitialiserTour(TypeTour);
-
-    GetWorldTimerManager().SetTimer(GestionTir, this, &ATourBase::TirerSurCible, CadenceTir, true);
+    InitialiserDepuisData();
 }
 
 void ATourBase::Tick(float DeltaTime)
@@ -33,44 +29,32 @@ void ATourBase::Tick(float DeltaTime)
     TrouverEnnemiLePlusProche();
 }
 
-void ATourBase::InitialiserTour(int32 Type)
+void ATourBase::InitialiserDepuisData()
 {
-    TypeTour = Type;
-
-    switch (TypeTour)
+    if (DataTour)
     {
-    case 1:
-        Vie = 100.f;
-        Degats = 15.f;
-        Portee = 800.f;
-        CadenceTir = 2.f;
-        break;
+        Vie = DataTour->Vie;
+        Degats = DataTour->Degats;
+        Portee = DataTour->Portee;
+        CadenceTir = DataTour->CadenceTir;
 
-    case 2:
-        Vie = 150.f;
-        Degats = 25.f;
-        Portee = 1000.f;
-        CadenceTir = 1.5f;
-        break;
-
-    case 3:
-        Vie = 200.f;
-        Degats = 40.f;
-        Portee = 1200.f;
-        CadenceTir = 1.f;
-        break;
+        GetWorldTimerManager().SetTimer(GestionTir, this, &ATourBase::TirerSurCible, CadenceTir, true);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("DataTour non assigné pour %s"), *GetName());
     }
 }
 
 void ATourBase::TrouverEnnemiLePlusProche()
 {
-    TArray<AActor*> EnnemisTrouves;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseEnemy::StaticClass(), EnnemisTrouves); // ✅ correction ici
+    TArray<AActor*> Ennemis;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseEnemy::StaticClass(), Ennemis);
 
     float DistancePlusProche = Portee;
-    ABaseEnemy* EnnemiPlusProche = nullptr; // ✅ correction ici
+    ABaseEnemy* EnnemiPlusProche = nullptr;
 
-    for (AActor* Acteur : EnnemisTrouves)
+    for (AActor* Acteur : Ennemis)
     {
         ABaseEnemy* Ennemi = Cast<ABaseEnemy>(Acteur);
         if (!Ennemi) continue;
@@ -88,17 +72,20 @@ void ATourBase::TrouverEnnemiLePlusProche()
 
 void ATourBase::TirerSurCible()
 {
-    if (CibleActuelle && ClasseMissile)
+    if (CibleActuelle && MissileBlueprintSoft.IsValid())
     {
-        FVector PositionTir = PointDeTir->GetComponentLocation();
-        FRotator RotationTir = (CibleActuelle->GetActorLocation() - PositionTir).Rotation();
-
-        AMissileBase* Missile = GetWorld()->SpawnActor<AMissileBase>(ClasseMissile, PositionTir, RotationTir);
-
-        if (Missile)
+        UClass* MissileClass = MissileBlueprintSoft.LoadSynchronous();
+        if (MissileClass)
         {
-            Missile->DefinirCible(CibleActuelle);
-            Missile->DefinirDegats(Degats);
+            FVector PositionTir = PointDeTir->GetComponentLocation();
+            FRotator RotationTir = (CibleActuelle->GetActorLocation() - PositionTir).Rotation();
+
+            AMissileBase* Missile = GetWorld()->SpawnActor<AMissileBase>(MissileClass, PositionTir, RotationTir);
+            if (Missile)
+            {
+                Missile->DefinirCible(CibleActuelle);
+                Missile->DefinirDegats(Degats);
+            }
         }
     }
 }
