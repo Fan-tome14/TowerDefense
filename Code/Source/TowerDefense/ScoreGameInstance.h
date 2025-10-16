@@ -5,9 +5,9 @@
 #include "UEnemyData.h"
 #include "ScoreGameInstance.generated.h"
 
-/**
- * GameInstance pour g�rer le score global
- */
+// 🔹 Delegate pour notifier le score
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScoreChanged, int32, NewScore);
+
 UCLASS()
 class TOWERDEFENSE_API UScoreGameInstance : public UGameInstance
 {
@@ -24,9 +24,13 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Score")
     int32 Vie;
 
-    // Ajouter un score selon le DataAsset de l'ennemi
+    // 🔹 Delegate BlueprintAssignable
+    UPROPERTY(BlueprintAssignable, Category = "Delegates")
+    FOnScoreChanged OnScoreChanged;
+
+    // Ajouter un score
     UFUNCTION(BlueprintCallable, Category = "Score")
-    void AjouterScore();
+    void AjouterScore(int points);
 
     // Retirer de la vie
     UFUNCTION(BlueprintCallable, Category = "Score")

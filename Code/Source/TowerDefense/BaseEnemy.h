@@ -25,6 +25,11 @@ public:
     // --- Statistiques de base ---
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats Ennemi")
     float Vie;
+
+    // --- DataAsset pour savoir le type d’ennemi ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+    UUEnemyData* EnemyData;
+
     // --- Fonction pour encaisser des dégâts ---
     UFUNCTION(BlueprintCallable, Category = "Combat Ennemi")
     void SubirDegats(float Quantite);

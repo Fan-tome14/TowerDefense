@@ -5,7 +5,6 @@
 ABaseEnemy::ABaseEnemy()
 {
     PrimaryActorTick.bCanEverTick = true;
-    Vie = 100.f;
 }
 
 void ABaseEnemy::BeginPlay()
@@ -24,15 +23,8 @@ void ABaseEnemy::SubirDegats(float Quantite)
 
     if (Vie <= 0.f)
     {
-     if (UScoreGameInstance* GI = Cast<UScoreGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
-     {
-        GI->AjouterScore();
-     }
-        
-
         // Déclencher l’événement de mort
         OnEnemyDeath.Broadcast(this);
-
         Destroy();
     }
 }

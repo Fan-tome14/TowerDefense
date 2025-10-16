@@ -5,15 +5,15 @@
 #include "GameFramework/Character.h"
 #include "UEnemyData.h"
 #include "Engine/TargetPoint.h"
-#include "UFO.generated.h"
+#include "TankAlien.generated.h"
 
 UCLASS()
-class TOWERDEFENSE_API AUFO : public ABaseEnemy
+class TOWERDEFENSE_API ATankAlien : public ABaseEnemy
 {
 	GENERATED_BODY()
 
 public:
-	AUFO();
+	ATankAlien();
 
 protected:
 	virtual void BeginPlay() override;
@@ -24,10 +24,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
 	ATargetPoint* TargetPointActor;
 
+	
+
 private:
-	/** Valeurs internes récupérées depuis l'asset */
+	/** Valeurs internes récupérées depuis le Data Asset */
 	float MovementSpeed;
-	float Health;
-	FString UFOClass;
-	TSubclassOf<ACharacter> UFOClassType;
+	
+	FString TankAlienClass;
+	TSubclassOf<ACharacter> TankAlienClassType;
 };

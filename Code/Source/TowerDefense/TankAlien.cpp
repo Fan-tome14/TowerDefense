@@ -1,12 +1,12 @@
-#include "UFO.h"
+#include "TankAlien.h"
 #include "EnnemyAIController.h"
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Kismet/GameplayStatics.h" // 🔹 Nécessaire pour GetActorOfClass
-#include "Engine/TargetPoint.h"     // 🔹 Pour le type ATargetPoint
+#include "Kismet/GameplayStatics.h"
+#include "Engine/TargetPoint.h"
 
-AUFO::AUFO()
+ATankAlien::ATankAlien()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -18,7 +18,7 @@ AUFO::AUFO()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
-void AUFO::BeginPlay()
+void ATankAlien::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -41,16 +41,16 @@ void AUFO::BeginPlay()
 	if (EnemyData)
 	{
 		MovementSpeed = EnemyData->Vitesse;
-		Health = EnemyData->Vie;
-		UFOClass = EnemyData->Nom.ToString();
-		UFOClassType = EnemyData->EnemyClass;
+		Vie = EnemyData->Vie;
+		TankAlienClass = EnemyData->Nom.ToString();
+		TankAlienClassType = EnemyData->EnemyClass;
 
 		// Appliquer la vitesse au CharacterMovementComponent
 		GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UFOData non assigné pour %s"), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("TankAlienData non assigné pour %s"), *GetName());
 	}
 
 	// ✅ Déplacement vers le TargetPoint via NavMesh (si trouvé)
@@ -59,7 +59,7 @@ void AUFO::BeginPlay()
 		AEnnemyAIController* AICont = Cast<AEnnemyAIController>(GetController());
 		if (AICont)
 		{
-			AICont->MoveToActor(TargetPointActor, 5.0f); // 5.f = tolérance distance
+			AICont->MoveToActor(TargetPointActor, 5.0f); // tolérance distance
 			UE_LOG(LogTemp, Warning, TEXT("%s se déplace vers %s"), *GetName(), *TargetPointActor->GetName());
 		}
 		else
@@ -73,11 +73,11 @@ void AUFO::BeginPlay()
 	}
 }
 
-void AUFO::Tick(float DeltaTime)
+void ATankAlien::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Optionnel : Rotation vers la cible (visuel uniquement)
+	// Rotation visuelle vers la cible
 	if (TargetPointActor)
 	{
 		FVector Direction = (TargetPointActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
