@@ -1,5 +1,6 @@
 #include "EndZone.h"
 #include "BaseEnemy.h" // pour reconnaître tes ennemis
+#include "TowerDefenseGameState.h"
 
 AKillZone::AKillZone()
 {
@@ -21,19 +22,16 @@ void AKillZone::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("🟥 KillZone active à %s"), *GetActorLocation().ToString());
 }
 
-void AKillZone::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-							   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-							   bool bFromSweep, const FHitResult& SweepResult)
+void AKillZone::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-
-	if (!OtherActor)
-		return;
-
-	ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor);
-	if (Enemy)
+	if (ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor))
 	{
+		ATowerDefenseGameState* GS = GetWorld()->GetGameState<ATowerDefenseGameState>();
+		if (GS)
+		{
+			GS->HandleEnemyRemoved();
+		}
 
-		UE_LOG(LogTemp, Warning, TEXT("💥 %s détruit par KillZone"), *Enemy->GetName());
 		Enemy->Destroy();
 	}
 }

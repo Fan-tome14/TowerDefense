@@ -20,13 +20,63 @@ void ATourBase::BeginPlay()
 {
     Super::BeginPlay();
     InitialiserDepuisData();
+
+    // 🔎 Recherche du composant avec le tag "arme"
+    TArray<UActorComponent*> ComposantsArme = GetComponentsByTag(USceneComponent::StaticClass(), FName("arme"));
+
+    // Si aucun composant "arme" trouvé, on cherche "arme2"
+    if (ComposantsArme.Num() == 0)
+    {
+        ComposantsArme = GetComponentsByTag(USceneComponent::StaticClass(), FName("arme2"));
+    }
+
+    if (ComposantsArme.Num() > 0)
+    {
+        ArmeComponent = Cast<USceneComponent>(ComposantsArme[0]);
+
+        if (ArmeComponent->ComponentHasTag(FName("arme2")))
+        {
+            UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme2' trouvé."), *GetName());
+        }
+        else
+            UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme' trouvé."), *GetName());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("%s : aucun composant avec le tag 'arme' ou 'arme2' trouvé !"), *GetName());
+    }
 }
+
+
 
 void ATourBase::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     TrouverEnnemiLePlusProche();
+
+    if (CibleActuelle && ArmeComponent)
+    {
+        FVector Origine = ArmeComponent->GetComponentLocation();
+        FVector Cible = CibleActuelle->GetActorLocation();
+
+        FVector Direction = (Cible - Origine).GetSafeNormal();
+        FRotator RotationCible = Direction.Rotation();
+
+        // 🔍 Vérifie le tag du composant
+        if (!ArmeComponent->ComponentHasTag(FName("arme2")))
+        {
+            // Applique la correction seulement pour les composants normaux ("arme")
+            RotationCible.Yaw -= 90.f;
+        }
+
+        // 🔒 Garde la tourelle à plat (évite qu’elle vise vers le haut/bas)
+        RotationCible.Pitch = 0.f;
+
+        // ✅ Applique la rotation calculée
+        ArmeComponent->SetWorldRotation(RotationCible);
+    }
 }
+
 
 void ATourBase::InitialiserDepuisData()
 {

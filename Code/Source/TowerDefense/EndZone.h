@@ -19,6 +19,7 @@ protected:
 	UBoxComponent* KillBox;
 
 	virtual void BeginPlay() override;
+	void NotifyActorBeginOverlap(AActor* OtherActor);
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

@@ -43,6 +43,10 @@ protected:
     FTimerHandle GestionTir;
     ABaseEnemy* CibleActuelle;
 
+    // --- Composant qui pivote (trouvé via tag "arme") ---
+    UPROPERTY()
+    USceneComponent* ArmeComponent = nullptr;
+    
     void TrouverEnnemiLePlusProche();
     void TirerSurCible();
     void InitialiserDepuisData();

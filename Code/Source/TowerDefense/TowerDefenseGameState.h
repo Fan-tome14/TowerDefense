@@ -85,6 +85,7 @@ public:
     /** Callback quand un ennemi meurt */
     UFUNCTION()
     void OnEnemyDied(ABaseEnemy* DeadEnemy);
+    void HandleEnemyRemoved();
 
 private:
     // ---------------------------------------------------

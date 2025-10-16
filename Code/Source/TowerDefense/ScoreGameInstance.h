@@ -6,7 +6,7 @@
 #include "ScoreGameInstance.generated.h"
 
 // 🔹 Delegate pour notifier le score
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScoreChanged, int32, NewScore);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameFinished);
 
 UCLASS()
 class TOWERDEFENSE_API UScoreGameInstance : public UGameInstance
@@ -23,10 +23,10 @@ public:
     // Vie actuelle
     UPROPERTY(BlueprintReadOnly, Category = "Score")
     int32 Vie;
-
+    
     // 🔹 Delegate BlueprintAssignable
-    UPROPERTY(BlueprintAssignable, Category = "Delegates")
-    FOnScoreChanged OnScoreChanged;
+    UPROPERTY(BlueprintAssignable, Category = "Events")
+    FOnGameFinished OnGameFinished;
 
     // Ajouter un score
     UFUNCTION(BlueprintCallable, Category = "Score")
@@ -38,5 +38,8 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Score")
     void ResetGame();
+
+    UFUNCTION(BlueprintCallable, Category = "Score")
+    void FinishGame();
 
 };

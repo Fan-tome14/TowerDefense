@@ -73,9 +73,12 @@ void ATowerDefenseGameState::StartNextWave()
     TArray<FWaveData*> AllWaves;
     WaveDataTable->GetAllRows(Context, AllWaves);
 
+    // ✅ Sécurise contre un index hors limite
     if (CurrentWaveIndex >= AllWaves.Num())
     {
-        UE_LOG(LogTemp, Warning, TEXT("✅ Toutes les vagues terminées !"));
+        UE_LOG(LogTemp, Warning, TEXT("✅ Aucune vague suivante. Fin du jeu."));
+        if (UScoreGameInstance* MyGI = Cast<UScoreGameInstance>(GetGameInstance()))
+            MyGI->FinishGame();
         return;
     }
 
@@ -180,7 +183,7 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
 
     // Déterminer les points selon la classe
     if (DeadEnemy->IsA(AAlien::StaticClass()))
-        PointsEarned = 50;
+        PointsEarned = 100;
     else if (DeadEnemy->IsA(AUFO::StaticClass()))
         PointsEarned = 20;
     else if (DeadEnemy->IsA(ATankAlien::StaticClass()))
@@ -196,19 +199,32 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
 
     UE_LOG(LogTemp, Warning, TEXT("💀 %s est mort. Restants : %d"), *DeadEnemy->GetName(), AliveEnemies);
 
-    // Passage à la prochaine vague seulement si tous les ennemis spawnés et morts
+    HandleEnemyRemoved(); // ✅ Centralise la gestion de fin de vague
+}
+
+void ATowerDefenseGameState::HandleEnemyRemoved()
+{
+    if (AliveEnemies < 0)
+        AliveEnemies = 0;
+
+    UE_LOG(LogTemp, Warning, TEXT("💀 Ennemi retiré du jeu. Restants : %d"), AliveEnemies);
+
+    // Si plus d'ennemis et tous ont été spawnés
     if (AliveEnemies <= 0 && SpawnedEnemies >= TotalEnemiesThisWave)
     {
         static const FString Context(TEXT("Wave Context"));
         TArray<FWaveData*> AllWaves;
         WaveDataTable->GetAllRows(Context, AllWaves);
 
+        UScoreGameInstance* MyGI = Cast<UScoreGameInstance>(GetGameInstance());
+
         if (CurrentWaveIndex + 1 >= AllWaves.Num())
         {
-            UE_LOG(LogTemp, Warning, TEXT("🎉 Toutes les vagues sont terminées, pas de timer lancé."));
+            UE_LOG(LogTemp, Warning, TEXT("🎉 Toutes les vagues sont terminées, fin du jeu."));
+            if (MyGI)
+                MyGI->FinishGame();
             return;
         }
-
 
         CurrentWaveIndex++;
         GetWorldTimerManager().SetTimer(
@@ -224,17 +240,5 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
 void ATowerDefenseGameState::DecrementAliveEnemies()
 {
     AliveEnemies--;
-    UE_LOG(LogTemp, Warning, TEXT("💀 Ennemi tué. Restants : %d"), AliveEnemies);
-
-    if (AliveEnemies <= 0 && SpawnedEnemies >= TotalEnemiesThisWave)
-    {
-        CurrentWaveIndex++;
-        GetWorldTimerManager().SetTimer(
-            NextWaveTimer,
-            this,
-            &ATowerDefenseGameState::StartNextWave,
-            CurrentNextWaveDelay,
-            false
-        );
-    }
+    HandleEnemyRemoved(); // ✅ Appelle la fonction centralisée
 }
