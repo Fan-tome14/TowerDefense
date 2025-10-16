@@ -22,7 +22,7 @@ ATowerDefenseGameState::ATowerDefenseGameState()
     SpawnRotation = FRotator::ZeroRotator;
 
     SpawnLocations.Add(FVector(-510.f, 120.f, 260.f));
-    SpawnLocations.Add(FVector(1290.f, 850.f, 240.f));
+    SpawnLocations.Add(FVector(1290.f, 1900.f, 240.f));
 }
 
 void ATowerDefenseGameState::BeginPlay()
