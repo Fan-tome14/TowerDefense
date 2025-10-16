@@ -46,8 +46,5 @@ protected:
     void TrouverEnnemiLePlusProche();
     void TirerSurCible();
     void InitialiserDepuisData();
-
-public:
-    UFUNCTION(BlueprintCallable, Category = "Tourelle")
-    void SubirDegats(float Quantite);
+    
 };
