@@ -5,6 +5,7 @@
 #include "UFO.h"
 #include "TankAlien.h"
 #include "BaseEnemy.h"
+#include "ScoreGameInstance.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -175,25 +176,41 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
         return;
 
     AliveEnemies--;
+
+    int32 PointsEarned = 0;
+
+    // Déterminer les points selon la classe
+    if (DeadEnemy->IsA(AAlien::StaticClass()))
+        PointsEarned = 50;
+    else if (DeadEnemy->IsA(AUFO::StaticClass()))
+        PointsEarned = 20;
+    else if (DeadEnemy->IsA(ATankAlien::StaticClass()))
+        PointsEarned = 50;
+
+    // Ajouter au score dans GameInstance
+    UScoreGameInstance* MyGI = Cast<UScoreGameInstance>(GetGameInstance());
+    if (MyGI)
+    {
+        MyGI->AjouterScore(PointsEarned);
+        UE_LOG(LogTemp, Warning, TEXT("+%d points ajoutés. Total: %d"), PointsEarned, MyGI->Score);
+    }
+
     UE_LOG(LogTemp, Warning, TEXT("💀 %s est mort. Restants : %d"), *DeadEnemy->GetName(), AliveEnemies);
 
-    // ⚡ Ne passer à la vague suivante que si tous les ennemis ont été spawnés ET qu'il n'en reste plus
+    // Passage à la prochaine vague seulement si tous les ennemis spawnés et morts
     if (AliveEnemies <= 0 && SpawnedEnemies >= TotalEnemiesThisWave)
     {
         static const FString Context(TEXT("Wave Context"));
         TArray<FWaveData*> AllWaves;
         WaveDataTable->GetAllRows(Context, AllWaves);
 
-        // 🔹 Vérifier si on est déjà à la dernière vague
         if (CurrentWaveIndex + 1 >= AllWaves.Num())
         {
             UE_LOG(LogTemp, Warning, TEXT("🎉 Toutes les vagues sont terminées, pas de timer lancé."));
-            return; // plus de vagues, on ne lance pas de timer
+            return;
         }
 
-        UE_LOG(LogTemp, Warning, TEXT("✅ Vague %d terminée, préparation de la suivante..."), CurrentWaveIndex + 1);
         CurrentWaveIndex++;
-
         GetWorldTimerManager().SetTimer(
             NextWaveTimer,
             this,
@@ -203,7 +220,6 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
         );
     }
 }
-
 
 void ATowerDefenseGameState::DecrementAliveEnemies()
 {

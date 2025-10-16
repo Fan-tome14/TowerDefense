@@ -34,6 +34,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave System")
     UDataTable* WaveDataTable;
 
+    /** Index de la vague actuelle */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave System")
+    int32 CurrentWaveIndex;
+        
     /** Position de spawn par défaut */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave System")
     FVector SpawnLocation;
@@ -86,9 +90,6 @@ private:
     // ---------------------------------------------------
     // 🔹 Variables internes
     // ---------------------------------------------------
-
-    /** Index de la vague actuelle */
-    int32 CurrentWaveIndex;
 
     /** Compteur d'ennemis spawnés dans la vague actuelle */
     int32 SpawnedEnemies;

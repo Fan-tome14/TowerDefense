@@ -1,15 +1,20 @@
 #include "ScoreGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 UScoreGameInstance::UScoreGameInstance()
 {
     Score = 0;
-    Vie = 100; // On commence avec 100 points de vie
+    Vie = 100;
 }
 
-void UScoreGameInstance::AjouterScore()
+void UScoreGameInstance::AjouterScore(int points)
 {
-    Score += 100;
-    UE_LOG(LogTemp, Log, TEXT("Score mis � jour : %d "), Score);
+    Score += points;
+
+    // 🔹 Notifie tous les Blueprints abonnés
+    OnScoreChanged.Broadcast(Score);
+
+    UE_LOG(LogTemp, Log, TEXT("Score mis à jour : %d"), Score);
 }
 
 void UScoreGameInstance::RetirerVie(int32 Montant)
