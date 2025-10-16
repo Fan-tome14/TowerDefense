@@ -35,4 +35,6 @@ public:
     // Retirer de la vie
     UFUNCTION(BlueprintCallable, Category = "Score")
     void RetirerVie(int32 Montant);
+
+
 };

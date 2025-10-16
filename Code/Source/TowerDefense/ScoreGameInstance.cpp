@@ -23,5 +23,7 @@ void UScoreGameInstance::RetirerVie(int32 Montant)
     if (Vie < 0)
         Vie = 0;
 
+
     UE_LOG(LogTemp, Warning, TEXT("Vie restante : %d"), Vie);
 }
+
