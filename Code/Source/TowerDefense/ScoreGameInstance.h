@@ -36,5 +36,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Score")
     void RetirerVie(int32 Montant);
 
+    UFUNCTION(BlueprintCallable, Category = "Score")
+    void ResetGame();
 
 };

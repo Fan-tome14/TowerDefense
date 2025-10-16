@@ -27,3 +27,13 @@ void UScoreGameInstance::RetirerVie(int32 Montant)
     UE_LOG(LogTemp, Warning, TEXT("Vie restante : %d"), Vie);
 }
 
+void UScoreGameInstance::ResetGame()
+{
+    Score = 0;
+    Vie = 100;
+
+    // Notifier les Blueprints si nécessaire
+    OnScoreChanged.Broadcast(Score);
+
+    UE_LOG(LogTemp, Warning, TEXT("GameInstance réinitialisée : Score=%d Vie=%d"), Score, Vie);
+}
