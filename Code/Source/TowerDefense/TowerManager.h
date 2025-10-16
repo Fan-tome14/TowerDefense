@@ -45,4 +45,9 @@ public:
     // 🔹 Améliore les tourelles si le score le permet
     UFUNCTION(BlueprintCallable, Category = "Towers")
     void UpgradeTowers();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prix")
+    int32 Prix;
+
+    int32 Cost;
 };

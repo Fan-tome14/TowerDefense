@@ -6,6 +6,8 @@ ATowerManager::ATowerManager()
 {
     PrimaryActorTick.bCanEverTick = false;
     CurrentTowerLevel = 1;
+    
+    Prix = 100;
 }
 
 void ATowerManager::BeginPlay()
@@ -58,13 +60,19 @@ void ATowerManager::UpgradeTowers()
     if (!MyGI)
         return;
 
-    int32 Cost = 0;
-    if (CurrentTowerLevel == 1)
+    
+    Cost = 0;
+    if (CurrentTowerLevel == 1) {
         Cost = 100;
-    else if (CurrentTowerLevel == 2)
+        Prix = 200;
+    }
+    else if (CurrentTowerLevel == 2) {
         Cost = 200;
+        Prix = 300;
+    }
     else
     {
+        Prix = 999;
         UE_LOG(LogTemp, Warning, TEXT("⚠️ Les tourelles sont déjà au niveau maximum."));
         return;
     }
