@@ -209,6 +209,7 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
             return;
         }
 
+
         CurrentWaveIndex++;
         GetWorldTimerManager().SetTimer(
             NextWaveTimer,
