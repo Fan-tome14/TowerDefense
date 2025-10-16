@@ -24,10 +24,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="AI")
 	ATargetPoint* TargetPointActor;
 
+	/** Data Asset contenant les stats de l'UFO */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Data")
+	UUEnemyData* UFOData;
+
 private:
 	/** Valeurs internes récupérées depuis l'asset */
 	float MovementSpeed;
-	
+	float Health;
 	FString UFOClass;
 	TSubclassOf<ACharacter> UFOClassType;
 };

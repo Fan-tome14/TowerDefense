@@ -29,14 +29,6 @@ public:
 	// Nombre d'UFO à faire apparaître
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 UFOCount;
-
-	// Type de TankAlien (Blueprint à spawn)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ATankAlien> TankAlienClass;
-
-	// Nombre de TankAlien à faire apparaître
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 TankAlienCount;
 	
 	// Délai entre chaque spawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -38,12 +38,12 @@ void AUFO::BeginPlay()
 	}
 
 	// Récupération des stats depuis le Data Asset
-	if (EnemyData)
+	if (UFOData)
 	{
-		MovementSpeed = EnemyData->Vitesse;
-		Vie = EnemyData->Vie;
-		UFOClass = EnemyData->Nom.ToString();
-		UFOClassType = EnemyData->EnemyClass;
+		MovementSpeed = UFOData->Vitesse;
+		Health = UFOData->Vie;
+		UFOClass = UFOData->Nom.ToString();
+		UFOClassType = UFOData->EnemyClass;
 
 		// Appliquer la vitesse au CharacterMovementComponent
 		GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;

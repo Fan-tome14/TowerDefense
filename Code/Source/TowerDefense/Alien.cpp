@@ -36,10 +36,10 @@ void AAlien::BeginPlay()
 	}
 
 	// ✅ Charger les données de vitesse
-	if (EnemyData)
+	if (AlienData)
 	{
-		MovementSpeed = EnemyData->Vitesse;
-		Vie = EnemyData->Vie;
+		MovementSpeed = AlienData->Vitesse;
+		Health = AlienData->Vie;
 		GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 	}
 

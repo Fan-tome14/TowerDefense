@@ -12,71 +12,42 @@ UCLASS()
 class TOWERDEFENSE_API ATourBase : public AActor
 {
     GENERATED_BODY()
-    
-public:	
+
+public:
     ATourBase();
 
 protected:
     virtual void BeginPlay() override;
-
-public:	
     virtual void Tick(float DeltaTime) override;
 
-    // ----------------------
-    // Données & Composants
-    // ----------------------
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
+    // --- Statistiques de la tourelle via DataAsset ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     UTourData* DataTour;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Amélioration")
-    int32 NiveauActuel = 1;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tour")
-    UStaticMeshComponent* MeshTour;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tour")
-    USceneComponent* PointDeTir;
-
-    UPROPERTY()
-    USceneComponent* ArmeComponent; 
-
-    UPROPERTY()
-    AActor* ModeleActeur; // L’acteur du modèle (spawné depuis DataTour)
-
-    // ----------------------
-    // Variables de combat
-    // ----------------------
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float Portee;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float CadenceTir;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Statistiques")
     float Degats;
 
-    UPROPERTY()
-    ABaseEnemy* CibleActuelle;
+    // --- Combat ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    TSoftClassPtr<AMissileBase> MissileBlueprintSoft; 
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "cost")
-    int32 prix;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Missile")
-    TSoftClassPtr<AMissileBase> MissileBlueprintSoft;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+    USceneComponent* PointDeTir;
 
     FTimerHandle GestionTir;
+    ABaseEnemy* CibleActuelle;
 
-    // ----------------------
-    // Fonctions
-    // ----------------------
-    void InitialiserDepuisData();
     void TrouverEnnemiLePlusProche();
     void TirerSurCible();
-    void AmeliorerTour();
+    void InitialiserDepuisData();
 
-    // Exemple dans ATourBase.h
-    UFUNCTION(BlueprintCallable, Category="Tour")
-    void AmeliorerToutesLesToursDuType(TSubclassOf<ATourBase> TypeTour);
-
-    
+public:
+    UFUNCTION(BlueprintCallable, Category = "Tourelle")
+    void SubirDegats(float Quantite);
 };

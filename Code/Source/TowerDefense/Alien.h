@@ -25,7 +25,12 @@ public:
 
 	float MovementSpeed;
 
+	float Health;
+
 	FString AlienClass;
 
 	TSubclassOf<ACharacter> AlienClassType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	UUEnemyData* AlienData;
 };
