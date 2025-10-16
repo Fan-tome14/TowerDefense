@@ -8,8 +8,8 @@ UScoreGameInstance::UScoreGameInstance()
 
 void UScoreGameInstance::AjouterScore()
 {
-    Score += 10;
-    UE_LOG(LogTemp, Log, TEXT("Score mis à jour : %d "), Score);
+    Score += 100;
+    UE_LOG(LogTemp, Log, TEXT("Score mis ï¿½ jour : %d "), Score);
 }
 
 void UScoreGameInstance::RetirerVie(int32 Montant)

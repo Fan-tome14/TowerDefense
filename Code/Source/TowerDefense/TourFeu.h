@@ -13,5 +13,6 @@ UCLASS()
 class TOWERDEFENSE_API ATourFeu : public ATourBase
 {
 	GENERATED_BODY()
+	public:
 	
 };

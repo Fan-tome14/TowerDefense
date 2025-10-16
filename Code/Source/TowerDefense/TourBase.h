@@ -58,6 +58,9 @@ public:
     UPROPERTY()
     ABaseEnemy* CibleActuelle;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "cost")
+    int32 prix;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Missile")
     TSoftClassPtr<AMissileBase> MissileBlueprintSoft;
 
@@ -70,5 +73,10 @@ public:
     void TrouverEnnemiLePlusProche();
     void TirerSurCible();
     void AmeliorerTour();
+
+    // Exemple dans ATourBase.h
+    UFUNCTION(BlueprintCallable, Category="Tour")
+    void AmeliorerToutesLesToursDuType(TSubclassOf<ATourBase> TypeTour);
+
     
 };

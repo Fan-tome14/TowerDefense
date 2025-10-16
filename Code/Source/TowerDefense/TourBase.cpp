@@ -64,41 +64,52 @@ void ATourBase::Tick(float DeltaTime)
 
 void ATourBase::InitialiserDepuisData()
 {
-    if (DataTour)
-    {
-        Degats = DataTour->Degats;
-        Portee = DataTour->Portee;
-        CadenceTir = DataTour->CadenceTir;
-
-        // ---- Spawn du modèle visuel ----
-        if (DataTour->Modele)
-        {
-            ModeleActeur = GetWorld()->SpawnActor<AActor>(DataTour->Modele, GetActorTransform());
-            if (ModeleActeur)
-            {
-                ModeleActeur->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-
-                // Recherche du composant avec le tag "arme"
-                TArray<UActorComponent*> ComposantsArme = ModeleActeur->GetComponentsByTag(USceneComponent::StaticClass(), FName("arme"));
-                if (ComposantsArme.Num() > 0)
-                {
-                    ArmeComponent = Cast<USceneComponent>(ComposantsArme[0]);
-                    UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme' trouvé dans %s"), *GetName(), *ModeleActeur->GetName());
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("%s : aucun composant avec le tag 'arme' trouvé."), *GetName());
-                }
-            }
-        }
-
-        GetWorldTimerManager().SetTimer(GestionTir, this, &ATourBase::TirerSurCible, CadenceTir, true);
-    }
-    else
+    if (!DataTour)
     {
         UE_LOG(LogTemp, Warning, TEXT("DataTour non assigné pour %s"), *GetName());
+        return;
     }
+
+    // ---- Supprimer l'ancien modèle si présent ----
+    if (ModeleActeur)
+    {
+        ModeleActeur->Destroy();
+        ModeleActeur = nullptr;
+        ArmeComponent = nullptr;
+    }
+
+    // ---- Appliquer les nouvelles données ----
+    Degats = DataTour->Degats;
+    Portee = DataTour->Portee;
+    CadenceTir = DataTour->CadenceTir;
+    prix = DataTour->CoutAmelioration;
+
+    // ---- Spawn du nouveau modèle visuel ----
+    if (DataTour->Modele)
+    {
+        ModeleActeur = GetWorld()->SpawnActor<AActor>(DataTour->Modele, GetActorTransform());
+        if (ModeleActeur)
+        {
+            ModeleActeur->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+            // Recherche du composant "arme"
+            TArray<UActorComponent*> ComposantsArme = ModeleActeur->GetComponentsByTag(USceneComponent::StaticClass(), FName("arme"));
+            if (ComposantsArme.Num() > 0)
+            {
+                ArmeComponent = Cast<USceneComponent>(ComposantsArme[0]);
+                UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme' trouvé dans %s"), *GetName(), *ModeleActeur->GetName());
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("%s : aucun composant avec le tag 'arme' trouvé."), *GetName());
+            }
+        }
+    }
+
+    // Redémarre le timer de tir
+    GetWorldTimerManager().SetTimer(GestionTir, this, &ATourBase::TirerSurCible, CadenceTir, true);
 }
+
 
 void ATourBase::TrouverEnnemiLePlusProche()
 {
@@ -182,3 +193,21 @@ void ATourBase::AmeliorerTour()
     UE_LOG(LogTemp, Log, TEXT("%s améliorée au niveau %d ! Score restant : %d"), *GetName(), NiveauActuel, GameInstance->Score);
 }
 
+
+void ATourBase::AmeliorerToutesLesToursDuType(TSubclassOf<ATourBase> TypeTour)
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    TArray<AActor*> Tours;
+    UGameplayStatics::GetAllActorsOfClass(World, TypeTour, Tours);
+
+    for (AActor* Acteur : Tours)
+    {
+        ATourBase* Tour = Cast<ATourBase>(Acteur);
+        if (Tour)
+        {
+            Tour->AmeliorerTour(); // Appel à la fonction existante
+        }
+    }
+}

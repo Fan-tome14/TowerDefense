@@ -2,212 +2,223 @@
 #include "WaveData.h"
 #include "Engine/DataTable.h"
 #include "Alien.h"
-#include "TimerManager.h"
-#include "BaseEnemy.h"
-#include "Kismet/GameplayStatics.h"
 #include "UFO.h"
+#include "TankAlien.h"
+#include "BaseEnemy.h"
+#include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 ATowerDefenseGameState::ATowerDefenseGameState()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	CurrentWaveIndex = 0;
-	AliveEnemies = 0;
+    PrimaryActorTick.bCanEverTick = true;
 
-	SpawnLocation = FVector(-510.f, 120.f, 260.f);
-	SpawnRotation = FRotator::ZeroRotator;
+    CurrentWaveIndex = 0;
+    SpawnedEnemies = 0;
+    AliveEnemies = 0;
+    TotalEnemiesThisWave = 0;
 
+    SpawnLocation = FVector(-510.f, 120.f, 260.f);
+    SpawnRotation = FRotator::ZeroRotator;
+
+    // Exemple de positions multiples
+    SpawnLocations.Add(FVector(-510.f, 120.f, 260.f));
+    SpawnLocations.Add(FVector(1290.f, 1350.f, 240.f));
 }
-
-
 
 void ATowerDefenseGameState::BeginPlay()
 {
-	Super::BeginPlay();
-	if (WaveDataTable)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("✅ WaveDataTable trouvé, lancement des vagues..."));
-		StartNextWave();
-	} else
-	{
-		UE_LOG(LogTemp, Error, TEXT("❌ Aucun DataTable assigné dans le GameState !"));
-	}
-}
+    Super::BeginPlay();
 
+    if (WaveDataTable)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("✅ WaveDataTable trouvé, lancement des vagues..."));
+        StartNextWave();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("❌ Aucun DataTable assigné dans le GameState !"));
+    }
+}
 
 void ATowerDefenseGameState::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
+    Super::Tick(DeltaSeconds);
 
-	// Si un timer de prochaine vague est en cours
-	if (GetWorldTimerManager().IsTimerActive(NextWaveTimer))
-	{
-		TempsAvantProchaineVague = GetWorldTimerManager().GetTimerRemaining(NextWaveTimer);
-	}
-	else
-	{
-		TempsAvantProchaineVague = 0.f;
-	}
+    // 🔹 Mettre à jour le temps restant seulement si timer actif
+    if (GetWorldTimerManager().IsTimerActive(NextWaveTimer))
+    {
+        TempsAvantProchaineVague = GetWorldTimerManager().GetTimerRemaining(NextWaveTimer);
+    }
+    else
+    {
+        TempsAvantProchaineVague = 0.f;
+    }
 }
-
 
 void ATowerDefenseGameState::StartWaves()
 {
-	if (WaveDataTable)
-	{
-		StartNextWave();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("⚠️ Aucun DataTable assigné dans le GameState"));
-	}
+    if (WaveDataTable)
+    {
+        StartNextWave();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("⚠️ Aucun DataTable assigné dans le GameState"));
+    }
 }
 
 void ATowerDefenseGameState::StartNextWave()
 {
-	static const FString Context(TEXT("Wave Context"));
-	TArray<FWaveData*> AllWaves;
-	WaveDataTable->GetAllRows(Context, AllWaves);
+    static const FString Context(TEXT("Wave Context"));
+    TArray<FWaveData*> AllWaves;
+    WaveDataTable->GetAllRows(Context, AllWaves);
 
-	if (CurrentWaveIndex >= AllWaves.Num())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("✅ Toutes les vagues terminées !"));
-		return;
-	}
+    if (CurrentWaveIndex >= AllWaves.Num())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("✅ Toutes les vagues terminées !"));
+        return;
+    }
 
-	FWaveData* CurrentWave = AllWaves[CurrentWaveIndex];
-	if (!CurrentWave)
-	{
-		UE_LOG(LogTemp, Error, TEXT("❌ Données de vague introuvables pour index %d"), CurrentWaveIndex);
-		return;
-	}
+    FWaveData* CurrentWave = AllWaves[CurrentWaveIndex];
+    if (!CurrentWave)
+    {
+        UE_LOG(LogTemp, Error, TEXT("❌ Données de vague introuvables pour index %d"), CurrentWaveIndex);
+        return;
+    }
 
-	UE_LOG(LogTemp, Warning, TEXT("🔥 Démarrage de la vague %d (%d ennemis)"),
-		CurrentWave->WaveNumber, CurrentWave->AlienCount);
+    // Total d'ennemis pour cette vague
+    TotalEnemiesThisWave = CurrentWave->AlienCount + CurrentWave->UFOCount + CurrentWave->TankAlienCount;
+    SpawnedEnemies = 0;
+    AliveEnemies = 0;
 
-	SpawnedEnemies = 0;
-	AliveEnemies = 0;
+    UE_LOG(LogTemp, Warning, TEXT("🔥 Démarrage de la vague %d (%d ennemis)"),
+        CurrentWave->WaveNumber, TotalEnemiesThisWave);
 
-	GetWorldTimerManager().SetTimer(
-		SpawnTimer,
-		this,
-		&ATowerDefenseGameState::SpawnEnemy,
-		CurrentWave->SpawnInterval,
-		true
-	);
+    // Démarrage du timer de spawn
+    GetWorldTimerManager().SetTimer(
+        SpawnTimer,
+        this,
+        &ATowerDefenseGameState::SpawnEnemy,
+        CurrentWave->SpawnInterval,
+        true
+    );
 
-	CurrentNextWaveDelay = CurrentWave->NextWaveDelay;
+    CurrentNextWaveDelay = CurrentWave->NextWaveDelay;
 }
 
 void ATowerDefenseGameState::SpawnEnemy()
 {
-	static const FString Context(TEXT("Wave Context"));
-	TArray<FWaveData*> AllWaves;
-	WaveDataTable->GetAllRows(Context, AllWaves);
+    static const FString Context(TEXT("Wave Context"));
+    TArray<FWaveData*> AllWaves;
+    WaveDataTable->GetAllRows(Context, AllWaves);
 
-	if (CurrentWaveIndex >= AllWaves.Num())
-		return;
+    if (CurrentWaveIndex >= AllWaves.Num())
+        return;
 
-	FWaveData* CurrentWave = AllWaves[CurrentWaveIndex];
-	if (!CurrentWave)
-		return;
+    FWaveData* CurrentWave = AllWaves[CurrentWaveIndex];
+    if (!CurrentWave)
+        return;
 
-	int32 TotalToSpawn = CurrentWave->AlienCount + CurrentWave->UFOCount;
+    if (SpawnedEnemies >= TotalEnemiesThisWave)
+    {
+        GetWorldTimerManager().ClearTimer(SpawnTimer);
+        return;
+    }
 
-	// Si on a déjà tout spawn
-	if (SpawnedEnemies >= TotalToSpawn)
-	{
-		GetWorldTimerManager().ClearTimer(SpawnTimer);
-		return;
-	}
+    // Détermination du type d'ennemi
+    TSubclassOf<ABaseEnemy> EnemyToSpawnClass = nullptr;
+    int32 Index = SpawnedEnemies;
 
-	// 🧮 Décide quel type spawn
-	TSubclassOf<ABaseEnemy> EnemyToSpawnClass = nullptr;
+    if (Index < CurrentWave->UFOCount)
+        EnemyToSpawnClass = CurrentWave->UFOClass;
+    else if (Index < CurrentWave->UFOCount + CurrentWave->AlienCount)
+        EnemyToSpawnClass = CurrentWave->AlienClass;
+    else
+        EnemyToSpawnClass = CurrentWave->TankAlienClass;
 
-	if (SpawnedEnemies < CurrentWave->UFOCount)
-	{
-		EnemyToSpawnClass = CurrentWave->UFOClass;
-	}
-	else
-	{
-		EnemyToSpawnClass = CurrentWave->AlienClass;
-	}
+    if (!EnemyToSpawnClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("❌ Classe d’ennemi invalide pour le spawn %d"), SpawnedEnemies + 1);
+        SpawnedEnemies++;
+        return;
+    }
 
-	if (!EnemyToSpawnClass)
-	{
-		UE_LOG(LogTemp, Error, TEXT("❌ Classe d’ennemi invalide pour le spawn %d"), SpawnedEnemies + 1);
-		SpawnedEnemies++;
-		return;
-	}
+    // Choix aléatoire de spawn
+    int32 RandomIndex = FMath::RandRange(0, SpawnLocations.Num() - 1);
+    FVector SpawnLoc = SpawnLocations.IsValidIndex(RandomIndex) ? SpawnLocations[RandomIndex] : SpawnLocation;
+    FRotator SpawnRot = SpawnRotation;
 
-	FVector SpawnLoc = SpawnLocation;
-	FRotator SpawnRot = SpawnRotation;
+    ABaseEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyToSpawnClass, SpawnLoc, SpawnRot);
+    if (SpawnedEnemy)
+    {
+        AliveEnemies++;
+        SpawnedEnemy->OnEnemyDeath.AddDynamic(this, &ATowerDefenseGameState::OnEnemyDied);
 
-	ABaseEnemy* SpawnedEnemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyToSpawnClass, SpawnLoc, SpawnRot);
+        UE_LOG(LogTemp, Warning, TEXT("👾 Ennemi %d (%s) spawné à %s (vivants : %d)"),
+            SpawnedEnemies + 1,
+            *SpawnedEnemy->GetName(),
+            *SpawnLoc.ToString(),
+            AliveEnemies);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("❌ Échec du spawn de l’ennemi %d pour la vague %d"),
+            SpawnedEnemies + 1, CurrentWaveIndex + 1);
+    }
 
-	if (SpawnedEnemy)
-	{
-		AliveEnemies++;
-		SpawnedEnemy->OnEnemyDeath.AddDynamic(this, &ATowerDefenseGameState::OnEnemyDied);
-
-		UE_LOG(LogTemp, Warning, TEXT("👾 Ennemi %d (%s) spawné à %s (vivants : %d)"),
-			SpawnedEnemies + 1,
-			*SpawnedEnemy->GetName(),
-			*SpawnLoc.ToString(),
-			AliveEnemies);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("❌ Échec du spawn de l’ennemi %d pour la vague %d"),
-			SpawnedEnemies + 1, CurrentWaveIndex + 1);
-	}
-
-	SpawnedEnemies++;
+    SpawnedEnemies++;
 }
-
 
 void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
 {
-	if (!DeadEnemy)
-	{
-		UE_LOG(LogTemp, Error, TEXT("⚠️ DeadEnemy est null dans OnEnemyDied !"));
-		return;
-	}
+    if (!DeadEnemy)
+        return;
 
-	AliveEnemies--;
-	UE_LOG(LogTemp, Warning, TEXT("💀 %s est mort. Restants : %d"), *DeadEnemy->GetName(), AliveEnemies);
+    AliveEnemies--;
+    UE_LOG(LogTemp, Warning, TEXT("💀 %s est mort. Restants : %d"), *DeadEnemy->GetName(), AliveEnemies);
 
-	if (AliveEnemies <= 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("✅ Vague %d terminée, préparation de la suivante..."), CurrentWaveIndex + 1);
-		CurrentWaveIndex++;
+    // ⚡ Ne passer à la vague suivante que si tous les ennemis ont été spawnés ET qu'il n'en reste plus
+    if (AliveEnemies <= 0 && SpawnedEnemies >= TotalEnemiesThisWave)
+    {
+        static const FString Context(TEXT("Wave Context"));
+        TArray<FWaveData*> AllWaves;
+        WaveDataTable->GetAllRows(Context, AllWaves);
 
-		GetWorldTimerManager().SetTimer(
-			NextWaveTimer,
-			this,
-			&ATowerDefenseGameState::StartNextWave,
-			CurrentNextWaveDelay,
-			false
-		);
-	}
+        // 🔹 Vérifier si on est déjà à la dernière vague
+        if (CurrentWaveIndex + 1 >= AllWaves.Num())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("🎉 Toutes les vagues sont terminées, pas de timer lancé."));
+            return; // plus de vagues, on ne lance pas de timer
+        }
+
+        UE_LOG(LogTemp, Warning, TEXT("✅ Vague %d terminée, préparation de la suivante..."), CurrentWaveIndex + 1);
+        CurrentWaveIndex++;
+
+        GetWorldTimerManager().SetTimer(
+            NextWaveTimer,
+            this,
+            &ATowerDefenseGameState::StartNextWave,
+            CurrentNextWaveDelay,
+            false
+        );
+    }
 }
 
 
 void ATowerDefenseGameState::DecrementAliveEnemies()
 {
-	AliveEnemies--;
-	UE_LOG(LogTemp, Warning, TEXT("💀 Ennemi tué. Restants : %d"), AliveEnemies);
+    AliveEnemies--;
+    UE_LOG(LogTemp, Warning, TEXT("💀 Ennemi tué. Restants : %d"), AliveEnemies);
 
-	if (AliveEnemies <= 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("✅ Vague %d terminée, préparation de la suivante..."), CurrentWaveIndex + 1);
-		CurrentWaveIndex++;
-
-		GetWorldTimerManager().SetTimer(
-			NextWaveTimer,
-			this,
-			&ATowerDefenseGameState::StartNextWave,
-			CurrentNextWaveDelay,
-			false
-		);
-	}
+    if (AliveEnemies <= 0 && SpawnedEnemies >= TotalEnemiesThisWave)
+    {
+        CurrentWaveIndex++;
+        GetWorldTimerManager().SetTimer(
+            NextWaveTimer,
+            this,
+            &ATowerDefenseGameState::StartNextWave,
+            CurrentNextWaveDelay,
+            false
+        );
+    }
 }
