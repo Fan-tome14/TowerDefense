@@ -21,7 +21,6 @@ ATowerDefenseGameState::ATowerDefenseGameState()
     SpawnLocation = FVector(-510.f, 120.f, 260.f);
     SpawnRotation = FRotator::ZeroRotator;
 
-    // Exemple de positions multiples
     SpawnLocations.Add(FVector(-510.f, 120.f, 260.f));
     SpawnLocations.Add(FVector(1290.f, 850.f, 240.f));
 }
