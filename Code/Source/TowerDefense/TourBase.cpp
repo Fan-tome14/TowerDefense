@@ -70,13 +70,13 @@ void ATourBase::Tick(float DeltaTime)
         FRotator RotationCible = Direction.Rotation();
 
         // 🔍 Vérifie le tag du composant et applique les corrections
-        if (ArmeComponent->ComponentHasTag(FName("arme2")))
+        if (ArmeComponent->ComponentHasTag(FName("arme")))
         {
             RotationCible.Yaw -= 90.f;
         }
         else if (ArmeComponent->ComponentHasTag(FName("arme3")))
         {
-            RotationCible.Yaw += 180.f; // 🔄 arme3 tourne de 180°
+            RotationCible.Yaw += 90.f; // 🔄 arme3 tourne de 180°
         }
         // "arme" normal n’a pas de correction
 
