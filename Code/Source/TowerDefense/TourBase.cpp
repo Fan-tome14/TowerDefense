@@ -4,6 +4,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 
+
+#include "Editor.h"       // pour GEditor
+#include "Engine/World.h"
+#include "DrawDebugHelpers.h"
+
 ATourBase::ATourBase()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -139,3 +144,53 @@ void ATourBase::TirerSurCible()
 }
 
 
+
+
+void ATourBase::DessinerPorteeDebug()
+{
+    UWorld* Monde = nullptr;
+
+#if WITH_EDITOR
+    if (GEditor)
+    {
+        Monde = GEditor->GetEditorWorldContext().World();
+    }
+#endif
+
+    if (!Monde)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Impossible de récupérer le monde pour le debug !"));
+        return;
+    }
+
+    FVector Position = GetActorLocation();
+
+    DrawDebugSphere(
+        Monde,
+        Position,
+        Portee,
+        32,
+        FColor::Green,
+        false,
+        5.0f,
+        0,
+        2.0f
+    );
+
+    DrawDebugCircle(
+        Monde,
+        Position,
+        Portee,
+        64,
+        FColor::Green,
+        false,
+        5.0f,
+        0,
+        2.f,
+        FVector(1, 0, 0),
+        FVector(0, 1, 0),
+        true
+    );
+
+    UE_LOG(LogTemp, Log, TEXT("Debug portée dessinée pour %s"), *GetName());
+}
