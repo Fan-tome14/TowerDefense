@@ -60,33 +60,41 @@ void ATowerManager2::UpgradeTowers()
     if (!MyGI)
         return;
 
-    
-    Cost = 0;
-    if (CurrentTowerLevel == 1) {
-        Cost = 100;
-        Prix = 200;
+    // 🔹 Déterminer le coût du prochain niveau sans encore l’appliquer
+    int32 NextCost = 0;
+    int32 NextPrix = Prix;
+
+    if (CurrentTowerLevel == 1)
+    {
+        NextCost = 100;
+        NextPrix = 200;
     }
-    else if (CurrentTowerLevel == 2) {
-        Cost = 200;
-        Prix = 300;
+    else if (CurrentTowerLevel == 2)
+    {
+        NextCost = 200;
+        NextPrix = 300;
     }
     else
     {
-        Prix = 999;
         UE_LOG(LogTemp, Warning, TEXT("⚠️ Les tourelles sont déjà au niveau maximum."));
         return;
     }
 
-    // Vérifier si le joueur a assez de score
-    if (MyGI->Score < Cost)
+    // 🔹 Vérifier si le joueur a assez de score
+    if (MyGI->Score < NextCost)
     {
-        UE_LOG(LogTemp, Warning, TEXT("💸 Score insuffisant pour upgrade. (%d requis, %d actuel)"), Cost, MyGI->Score);
-        return;
+        UE_LOG(LogTemp, Warning, TEXT("💸 Score insuffisant pour upgrade. (%d requis, %d actuel)"), NextCost, MyGI->Score);
+        return; // ⛔️ Pas assez de points → on sort, sans modifier Cost/Prix
     }
 
-    // Déduire le coût et passer au niveau supérieur
+    // 🔹 Si tout est bon, on applique maintenant
+    Cost = NextCost;
+    Prix = NextPrix;
+
+    // 🔹 Déduire le coût et passer au niveau supérieur
     MyGI->Score -= Cost;
     CurrentTowerLevel++;
+
     SpawnTowers(); // respawn avec les nouveaux BP
 
     UE_LOG(LogTemp, Warning, TEXT("⬆️ Tourelles améliorées au niveau %d. Score restant : %d"), CurrentTowerLevel, MyGI->Score);
