@@ -183,9 +183,9 @@ void ATowerDefenseGameState::OnEnemyDied(ABaseEnemy* DeadEnemy)
 
     // Déterminer les points selon la classe
     if (DeadEnemy->IsA(AAlien::StaticClass()))
-        PointsEarned = 100;
+        PointsEarned = 15;
     else if (DeadEnemy->IsA(AUFO::StaticClass()))
-        PointsEarned = 20;
+        PointsEarned = 30;
     else if (DeadEnemy->IsA(ATankAlien::StaticClass()))
         PointsEarned = 50;
 
