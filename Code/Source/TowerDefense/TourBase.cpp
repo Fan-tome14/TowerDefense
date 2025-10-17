@@ -26,33 +26,35 @@ void ATourBase::BeginPlay()
     Super::BeginPlay();
     InitialiserDepuisData();
 
-    // 🔎 Recherche du composant avec le tag "arme"
+    // 🔎 Recherche du composant avec le tag "arme", puis "arme2", puis "arme3"
     TArray<UActorComponent*> ComposantsArme = GetComponentsByTag(USceneComponent::StaticClass(), FName("arme"));
 
-    // Si aucun composant "arme" trouvé, on cherche "arme2"
     if (ComposantsArme.Num() == 0)
     {
         ComposantsArme = GetComponentsByTag(USceneComponent::StaticClass(), FName("arme2"));
+    }
+
+    if (ComposantsArme.Num() == 0)
+    {
+        ComposantsArme = GetComponentsByTag(USceneComponent::StaticClass(), FName("arme3"));
     }
 
     if (ComposantsArme.Num() > 0)
     {
         ArmeComponent = Cast<USceneComponent>(ComposantsArme[0]);
 
-        if (ArmeComponent->ComponentHasTag(FName("arme2")))
-        {
-            UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme2' trouvé."), *GetName());
-        }
+        if (ArmeComponent->ComponentHasTag(FName("arme2"))){UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme2' trouvé."), *GetName());}
+            
+        else if (ArmeComponent->ComponentHasTag(FName("arme3"))){UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme3' trouvé."), *GetName());}
+            
         else
             UE_LOG(LogTemp, Log, TEXT("%s : composant 'arme' trouvé."), *GetName());
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("%s : aucun composant avec le tag 'arme' ou 'arme2' trouvé !"), *GetName());
+        UE_LOG(LogTemp, Warning, TEXT("%s : aucun composant avec le tag 'arme', 'arme2' ou 'arme3' trouvé !"), *GetName());
     }
 }
-
-
 
 void ATourBase::Tick(float DeltaTime)
 {
@@ -67,20 +69,22 @@ void ATourBase::Tick(float DeltaTime)
         FVector Direction = (Cible - Origine).GetSafeNormal();
         FRotator RotationCible = Direction.Rotation();
 
-        // 🔍 Vérifie le tag du composant
-        if (!ArmeComponent->ComponentHasTag(FName("arme2")))
+        // 🔍 Vérifie le tag du composant et applique les corrections
+        if (ArmeComponent->ComponentHasTag(FName("arme2")))
         {
-            // Applique la correction seulement pour les composants normaux ("arme")
             RotationCible.Yaw -= 90.f;
         }
+        else if (ArmeComponent->ComponentHasTag(FName("arme3")))
+        {
+            RotationCible.Yaw += 180.f; // 🔄 arme3 tourne de 180°
+        }
+        // "arme" normal n’a pas de correction
 
-        // 🔒 Garde la tourelle à plat (évite qu’elle vise vers le haut/bas)
-        RotationCible.Pitch = 0.f;
-
-        // ✅ Applique la rotation calculée
+        RotationCible.Pitch = 0.f; // garder la tourelle à plat
         ArmeComponent->SetWorldRotation(RotationCible);
     }
 }
+
 
 
 void ATourBase::InitialiserDepuisData()

@@ -1,28 +1,52 @@
 ﻿#include "TowerManager2.h"
 #include "Kismet/GameplayStatics.h"
 #include "ScoreGameInstance.h"
+#include "EngineUtils.h" // pour TActorIterator
 
 ATowerManager2::ATowerManager2()
 {
     PrimaryActorTick.bCanEverTick = false;
     CurrentTowerLevel = 1;
-    
     Prix = 100;
 }
 
 void ATowerManager2::BeginPlay()
 {
     Super::BeginPlay();
-    SpawnTowers();
+
+    // Récupérer les tours déjà placées dans la scène (niveau 1)
+    SpawnedTowers.Empty();
+    if (TowerLevel1BP)
+    {
+        for (TActorIterator<AActor> It(GetWorld(), TowerLevel1BP); It; ++It)
+        {
+            AActor* Tower = *It;
+            if (Tower && Tower->IsValidLowLevel())
+            {
+                SpawnedTowers.Add(Tower);
+            }
+        }
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("✅ %d tours existantes récupérées au début du jeu."), SpawnedTowers.Num());
+
+    // On ne spawn rien pour le niveau 1
+    if (CurrentTowerLevel > 1)
+    {
+        SpawnTowers();
+    }
 }
 
 void ATowerManager2::SpawnTowers()
 {
-    // Supprimer les anciennes tourelles
+    // Supprimer toutes les tours existantes avant de spawn le niveau actuel
     for (AActor* Tower : SpawnedTowers)
     {
         if (Tower && Tower->IsValidLowLevel())
+        {
+            UE_LOG(LogTemp, Error, TEXT("test 1 et %d !"), CurrentTowerLevel);
             Tower->Destroy();
+        }
     }
     SpawnedTowers.Empty();
 
@@ -60,7 +84,6 @@ void ATowerManager2::UpgradeTowers()
     if (!MyGI)
         return;
 
-    // 🔹 Déterminer le coût du prochain niveau sans encore l’appliquer
     int32 NextCost = 0;
     int32 NextPrix = Prix;
 
@@ -80,22 +103,22 @@ void ATowerManager2::UpgradeTowers()
         return;
     }
 
-    // 🔹 Vérifier si le joueur a assez de score
     if (MyGI->Score < NextCost)
     {
         UE_LOG(LogTemp, Warning, TEXT("💸 Score insuffisant pour upgrade. (%d requis, %d actuel)"), NextCost, MyGI->Score);
-        return; // ⛔️ Pas assez de points → on sort, sans modifier Cost/Prix
+        return;
     }
 
-    // 🔹 Si tout est bon, on applique maintenant
     Cost = NextCost;
     Prix = NextPrix;
-
-    // 🔹 Déduire le coût et passer au niveau supérieur
     MyGI->Score -= Cost;
     CurrentTowerLevel++;
 
-    SpawnTowers(); // respawn avec les nouveaux BP
+    // Spawn seulement si niveau > 1
+    if (CurrentTowerLevel > 1)
+    {
+        SpawnTowers(); // ceci supprimera automatiquement la tour de niveau 1 et spawn les nouvelles
+    }
 
     UE_LOG(LogTemp, Warning, TEXT("⬆️ Tourelles améliorées au niveau %d. Score restant : %d"), CurrentTowerLevel, MyGI->Score);
 }
