@@ -16,9 +16,6 @@ class TOWERDEFENSE_API ATourBase : public AActor
 public:
     ATourBase();
 
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Debug")
-    void DessinerPorteeDebug();
-
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
