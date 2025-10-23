@@ -23,7 +23,7 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     // --- Statistiques de base ---
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats Ennemi")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats Ennemi")
     float Vie;
 
     // --- DataAsset pour savoir le type d’ennemi ---

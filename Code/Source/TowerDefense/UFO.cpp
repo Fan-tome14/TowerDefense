@@ -40,8 +40,10 @@ void AUFO::BeginPlay()
 	// Récupération des stats depuis le Data Asset
 	if (EnemyData)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Probléme data passer je suis dans l'assignantion"));
+
 		MovementSpeed = EnemyData->Vitesse;
-		Health = EnemyData->Vie;
+		Vie = EnemyData->Vie;
 		UFOClass = EnemyData->Nom.ToString();
 		UFOClassType = EnemyData->EnemyClass;
 

@@ -27,7 +27,6 @@ public:
 private:
 	/** Valeurs internes récupérées depuis l'asset */
 	float MovementSpeed;
-	float Health;
 	FString UFOClass;
 	TSubclassOf<ACharacter> UFOClassType;
 };

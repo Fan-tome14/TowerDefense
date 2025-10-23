@@ -124,20 +124,16 @@ void ATourBase::TrouverEnnemiLePlusProche()
 
 void ATourBase::TirerSurCible()
 {
-    if (CibleActuelle && MissileBlueprintSoft.IsValid())
-    {
-        UClass* MissileClass = MissileBlueprintSoft.LoadSynchronous();
-        if (MissileClass)
-        {
-            FVector PositionTir = PointDeTir->GetComponentLocation();
-            FRotator RotationTir = (CibleActuelle->GetActorLocation() - PositionTir).Rotation();
+    if (!CibleActuelle || !MissileClass) return;
 
-            AMissileBase* Missile = GetWorld()->SpawnActor<AMissileBase>(MissileClass, PositionTir, RotationTir);
-            if (Missile)
-            {
-                Missile->DefinirCible(CibleActuelle);
-                Missile->DefinirDegats(Degats);
-            }
-        }
+    FVector PositionTir = PointDeTir->GetComponentLocation();
+    FRotator RotationTir = (CibleActuelle->GetActorLocation() - PositionTir).Rotation();
+
+    // 💥 Spawn du missile classique
+    AMissileBase* Missile = GetWorld()->SpawnActor<AMissileBase>(MissileClass, PositionTir, RotationTir);
+    if (Missile)
+    {
+        Missile->DefinirCible(CibleActuelle);
+        Missile->DefinirDegats(Degats);
     }
 }
