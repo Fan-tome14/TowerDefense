@@ -129,7 +129,6 @@ void ATourBase::TirerSurCible()
     FVector PositionTir = PointDeTir->GetComponentLocation();
     FRotator RotationTir = (CibleActuelle->GetActorLocation() - PositionTir).Rotation();
 
-    // 💥 Spawn du missile classique
     AMissileBase* Missile = GetWorld()->SpawnActor<AMissileBase>(MissileClass, PositionTir, RotationTir);
     if (Missile)
     {
